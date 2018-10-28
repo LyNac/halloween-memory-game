@@ -1,7 +1,12 @@
 const cards = document.querySelectorAll('.memory-card');
+const congratulationsModal = document.getElementById('congratulations');
+const closeModal = document.getElementsByClassName("close")[0];
+const playAgain = document.getElementById('play-again');
+const totalNumberOfCards = cards.length;
 
 let hasFlippedCard = false;
 let lockBoard = false;
+let numberOfFlippedCards = 0;
 let firstCard, secondCard;
 
 function flipCard() {
@@ -35,8 +40,10 @@ function disableCards() {
 		// it's a match!
 		firstCard.removeEventListener('click', flipCard);
 		secondCard.removeEventListener('click', flipCard);
+		numberOfFlippedCards += 2;
 
-		resetBoard();
+		// all cards are flipped
+		numberOfFlippedCards == totalNumberOfCards ? congratulatePlayer() : resetBoard();
 }
 
 function unflipCards() {
@@ -64,6 +71,30 @@ function resetBoard () {
 	});
 })();
 
+function congratulatePlayer() {
+	congratulationsModal.style.display = "block";
+}
+
+closeModal.onclick = function() {
+  congratulationsModal.style.display = "none";
+}
+
+playAgain.onclick = function() {
+  congratulationsModal.style.display = "none";
+  resetAndFlipAllCards();
+}
+
+function resetAndFlipAllCards() {
+  lockBoard = true;
+  setTimeout(() => {
+    cards.forEach(card => {
+      card.classList.remove('flip');
+      card.addEventListener('click', flipCard);
+      card.style.order = Math.floor(Math.random() * 12);
+    });
+    resetBoard();
+    numberOfFlippedCards = 0;
+  }, 1000);
+}
 
 cards.forEach(card => card.addEventListener('click', flipCard));
-
